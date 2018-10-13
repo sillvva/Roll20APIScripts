@@ -1296,6 +1296,8 @@ var CombatTracker = CombatTracker || (function() {
         if(state[state_name].config.debug){
 			makeAndSendMenu(script_name + ' Ready! Debug On.', '', 'gm');
         }
+        
+        log(StatusInfo.getConditionByName('Stunned'))
     },
 
     handeIniativePageChange = (obj,prev) => {
@@ -1341,10 +1343,10 @@ var CombatTracker = CombatTracker || (function() {
                 close_stop: true,
                 pull: true,
                 turnorder: {
-                    throw_initiative: true,
-                    auto_sort: true,
-                    reroll_ini_round: false,
-                    skip_custom: true,
+                    throw_initiative: state[state_name].config.throw_initiative || true,
+                    auto_sort: state[state_name].config.auto_sort || true,
+                    reroll_ini_round: state[state_name].config.reroll_ini_round || false,
+                    skip_custom: state[state_name].config.skip_custom || true,
                 },
                 timer: {
                     use_timer: true,
@@ -1499,7 +1501,7 @@ on('ready',function() {
 
 /*
 conditions = {
-    54235346534564: [
+    xandir: [
         { name: 'prone', duration: '1' }
     ]
 }

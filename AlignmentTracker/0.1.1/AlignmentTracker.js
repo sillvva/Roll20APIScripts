@@ -1,5 +1,5 @@
 /*
- * Version 0.1.2
+ * Version 0.1.1
  * Made By Robin Kuiper
  * Skype: RobinKuiper.eu
  * Discord: Atheos#1095
@@ -38,9 +38,9 @@ var AlignmentTracker = AlignmentTracker || (function() {
 
     alignment_positions = {
         x: [
-            { range: createRange(0, 11), name: 'Lawful' },
+            { range: createRange(0, 11), name: 'Chaotic' },
             { range: createRange(12, 22), name: 'Neutral' },
-            { range: createRange(23, 33), name: 'Chaotic' }
+            { range: createRange(23, 33), name: 'Lawful' }
         ],
         y: [
             { range: createRange(0, 11), name: 'Good' },
@@ -61,7 +61,7 @@ var AlignmentTracker = AlignmentTracker || (function() {
         if (command == state[state_name].config.command) {
             switch(extracommand){
                 case 'reset':
-                    state[state_name] = { version: "0.1.2" };
+                    state[state_name] = {};
                     setDefaults(true);
                     sendConfigMenu();
                 break;
@@ -82,18 +82,9 @@ var AlignmentTracker = AlignmentTracker || (function() {
                     // TODO: if not selected
                     
                     msg.selected.forEach(s => {
-                        if(s._type !== 'graphic'){
-                            makeAndSendMenu('This is not a valid token.', '', 'gm');
-                            return;
-                        }
-
                         let character = getObj('character', getObj(s._type, s._id).get('represents'));
 
-                        if(character)
-                            createTable(character);
-                        else{
-                            makeAndSendMenu('This token does not represent a character.', '', 'gm');
-                        }
+                        createTable(character);
                     })
                 break;
 
@@ -207,15 +198,15 @@ var AlignmentTracker = AlignmentTracker || (function() {
         alignment = strip(alignment).toLowerCase();
 
         switch(alignment){
-            case 'cg': case 'lawfulgood':
+            case 'cg': case 'chaoticgood':
                 return { x: 5, y: 5 };
             break;
 
-            case 'cn': case 'lawfulneutral':
+            case 'cn': case 'chaoticneutral':
                 return { x: 5, y: 16 };
             break;
 
-            case 'ce': case 'lawfulevil':
+            case 'ce': case 'chaoticevil':
                 return { x: 5, y: 27 };
             break;
 
@@ -223,7 +214,7 @@ var AlignmentTracker = AlignmentTracker || (function() {
                 return { x: 16, y: 5 };
             break;
 
-            case 'nn': case 'neutralneutral': case 'tn': case 'trueneutral': case 'neutral':
+            case 'nn': case 'neutralneutral': case 'tn': case 'trueneutral':
                 return { x: 16, y: 16 };
             break;
 
@@ -231,15 +222,15 @@ var AlignmentTracker = AlignmentTracker || (function() {
                 return { x: 16, y: 27 };
             break;
 
-            case 'lg': case 'chaoticgood':
+            case 'lg': case 'lawfulgood':
                 return { x: 27, y: 5 };
             break;
 
-            case 'ln': case 'chaoticneutral':
+            case 'ln': case 'lawfulneutral':
                 return { x: 27, y: 16 };
             break;
 
-            case 'le': case 'chaoticevil':
+            case 'le': case 'lawfulevil':
                 return { x: 27, y: 27 };
             break;
         }
@@ -261,9 +252,9 @@ var AlignmentTracker = AlignmentTracker || (function() {
         <table id="alignmenttable"> \
             <tr> \
                 <th></th> \
-                <th colspan="11" style="text-align: left;">Lawful</th> \
+                <th colspan="11" style="text-align: left;">Chaotic</th> \
                 <th colspan="11">Neutral</th> \
-                <th colspan="11" style="text-align: right;">Chaotic</th> \
+                <th colspan="11" style="text-align: right;">Lawful</th> \
             </tr>';
 
         for(var row = 0; row <= 32; row++){
@@ -302,7 +293,7 @@ var AlignmentTracker = AlignmentTracker || (function() {
     },
 
     getOrCreateAlignmentHandout = (character) => {
-        let name = character.get('name') + ' alignment table',
+        let name = strip(character.get('name')).toLowerCase() + '_alignment',
             handout = findObjs({
                 type: 'handout',
                 name: name
@@ -420,20 +411,6 @@ var AlignmentTracker = AlignmentTracker || (function() {
         if(!state[state_name].config.hasOwnProperty('firsttime') && !reset){
             sendConfigMenu(true);
             state[state_name].config.firsttime = false;
-        }
-
-        if(!state[state_name].hasOwnProperty('version') || state[state_name].version !== "0.1.2"){
-            for (let [key, value] of Object.entries(state[state_name].characters)) {  
-                if(value.x >= 0 && value.x <= 11){
-                    state[state_name].characters[key].x = 33 - value.x;
-                    log('Changed ' + key + ' alignment position to: ' + state[state_name].characters[key].x + ', ' + state[state_name].characters[key].y);
-                }else if(value.x >= 23 && value.y <= 33){
-                    state[state_name].characters[key].x = 33 - value.x;
-                    log('Changed ' + key + ' alignment position to: ' + state[state_name].characters[key].x + ', ' + state[state_name].characters[key].y);
-                }
-            }
-
-            state[state_name].version = "0.1.2";
         }
     };
 
